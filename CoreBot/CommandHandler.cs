@@ -63,7 +63,6 @@ namespace CoreBot
 
         public async Task DoCommand(SocketMessage parameterMessage)
         {
-            Messages++;
             if (!(parameterMessage is SocketUserMessage message)) return;
             var argPos = 0;
             var context = new SocketCommandContext(_client, message);
@@ -109,7 +108,6 @@ namespace CoreBot
             else
             {
                 Logger.LogInfo($"{message.Content} || {message.Author}");
-                Commands++;
             }
         }
 

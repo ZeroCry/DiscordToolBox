@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -14,6 +15,40 @@ namespace CoreBot.Commands
     [RequireOwner]
     public class OwnerCommands : ModuleBase<SocketCommandContext>
     {
+        private readonly CommandService _service;
+
+        public OwnerCommands(CommandService service)
+        {
+            _service = service;
+        }
+
+        [Command("help")]
+        [Summary("help")]
+        [Remarks("A list of all commands")]
+        public async Task HelpAsync([Remainder] string modulearg = null)
+        {
+            var embed = new EmbedBuilder
+            {
+                Color = new Color(114, 137, 218),
+                Title = $"{Context.Client.CurrentUser.Username} | ToolBox Commands | Prefix: {Config.Load().Prefix}"
+            };
+
+
+            foreach (var module in _service.Modules)
+            {
+                var list = module.Commands.Select(command => $"`{Config.Load().Prefix}{command.Summary}` = {command.Remarks}").ToList();
+                if (module.Commands.Count > 0)
+                    embed.AddField(x =>
+                    {
+                        x.Name = module.Name;
+                        x.Value = string.Join(", ", list);
+                    });
+            }
+
+            await ReplyAsync("", false, embed.Build());
+        }
+
+
         [Command("SetGame")]
         [Summary("SetGame <game>")]
         [Remarks("Set the bot's Current Game.")]
